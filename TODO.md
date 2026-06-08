@@ -1,0 +1,114 @@
+# TODO List
+
+该文件用于记录开发项目及未修改bug，以及修改内容清单。
+
+## 待开发
+
+以下为示例（预计三个版本后移除）
+
+- 示例：未完成功能——负责人
+- 示例：向量化优先检索池功能开发——49
+
+---
+
+以下为待开发内容
+
+- **项目框架重构 (Project Refactoring)**:
+    - 现状：大量功能模块（如 `NccsApi.js`）存在手动组装参数、逻辑耦合度高、代码风格不统一（"能跑就行"遗留债）等问题。
+    - 目标：系统性重构项目架构，统一使用 Builder 模式（如 `Options.builder`），解耦业务逻辑与配置管理，提升代码可维护性和优雅度。
+
+## 未修复
+
+以下为示例（预计三个版本后移除）
+
+- 示例：未完成bug——负责人
+- 示例：TavernHelper异常undefined导致角色世界书读取异常——Silence_Lurker潜默
+- ~~示例：已完成修复bug——负责人~~
+
+---
+
+以下为记录内容
+
+## 版本修复/开发日志
+
+### 1.5.7？
+
+- 添加了**TODO.md**，现在可以记录任务清单并更清楚的记录开发完成状态了。
+- 无实际功能更新
+
+### 中间版本未维护该文件
+
+### 1.8.3
+
+以下为修复内容
+
+以下为更新内容：
+
+- 添加记忆管理并发调用
+
+### 2.1.1 (2026/04/23)
+
+以下为修复内容：
+- **自动写卡系统 Diff 视图修复**：
+  - 修复了 `core/auto-char-card/ui-bindings.js` 中 `parseDiff` 函数的解析逻辑，使其能正确处理换行符和缩进，确保 Diff 视图能正确显示红绿对比。
+  - 修复了流式输出时产生多余 Diff 标签页的问题，增加了清理逻辑。
+  - 修复了 `edit_character_text` 在流式输出时的异步请求问题，确保能正确获取原始内容进行 Diff 解析。
+  - 彻底清理了流式输出时产生的多余 `Diff: WI undefined` 标签页。
+  - 修复了局部修改时，由于参数未完全生成导致的 `Diff: WI undefined` 标签页堆积问题，增加了友好的 `(Generating...)` 提示和自动清理机制。
+- **自动写卡系统死循环修复**：修复了 `core/auto-char-card/agent-manager.js` 中因截断检测逻辑不支持中文标点，导致 AI 回复以中文结尾时被误判为截断，从而陷入无限发送 "Continue" 的死循环 Bug。
+- **自动写卡系统任务完成机制**：在 `core/auto-char-card/tools.js` 中新增了 `task_complete` 工具，并在系统提示词中强制要求 AI 在完成任务时调用此工具，解决了 AI 无法明确结束任务导致状态挂起的问题。
+- **自动写卡系统世界书创建修复**：修复了在自动写卡界面创建新世界书时，因占位符 `'new'` 未被正确处理导致创建失败的 Bug。
+- 修复了“Amily2 提示词链编辑器”中四个全局按钮（全部保存、导入配置、导出配置、恢复全部）点击无效的问题，补充了相应的事件绑定和处理逻辑。
+- **表格系统解析器修复**：修复了 `core/table-system/executor.js` 中 `tryParseObject` 函数的正则解析 Bug。原正则在处理包含逗号和数字的字符串（如 `"比分变成了 2, 1:0"`）时会错误截断字符串导致数据损坏。现已引入字符串占位符机制，确保解析的健壮性。
+- **分步填表逻辑死结修复**：修复了 `core/table-system/secondary-filler.js` 中因倒序扫描导致的“遗留楼层被永久挤出”的 Bug。将扫描逻辑改为正向扫描，确保最老的未处理消息被优先处理，解决了填表失败后继续聊天导致的数据断层问题。
+- **分步填表上下文丢失修复**：修复了 `core/table-system/secondary-filler.js` 中 `getHistoryContext` 函数的切片索引错误（Off-by-one error），确保紧挨着目标楼层的那条关键历史消息能够被正确提取并发送给 AI，提供完整的上下文因果关系。
+
+以下为更新内容：
+- **硅基生图模块集成**：
+  - 在“附加功能”面板中新增“硅基生图”入口，与“前端渲染”按钮平行排列。
+  - 支持在聊天消息中通过 `[sfigen: 提示词]` 标签一键生成图片，并支持多张图片切换、放大预览和保存到本地。
+  - 修复了编辑消息后生图 UI 重复渲染或消失的问题，确保 DOM 更新的稳定性。
+  - 修复了图片 URL 无法正确保存到聊天记录的问题。
+- **自动构建器优化**：
+  - **多会话管理**：支持创建、切换和删除多个独立的构建会话，方便用户同时进行多个角色的构建任务。
+  - **状态持久化**：动态规则、聊天记录和任务状态现在会保存在本地存储中，刷新页面或关闭窗口后不会丢失。
+- **提示词优化**：将 `core/table-system/settings.js` 和 `PresetSettings/config.js` 中的“硬破限”提示词（如“酒馆国家协议”、“无上法则”等强制性越狱词汇）全面修改为温和的“软引导”提示词，引导 AI 作为客观中立的专业分析助手进行工作。
+- **预设版本更新提示**：在 `PresetSettings/prese_state.js` 中添加了提示词版本检测逻辑。当用户首次更新到包含新版“软引导”提示词的版本时，会弹出友好的 UI 提示框，允许用户选择“一键更新”恢复默认最新提示词，或“保留自定义”维持原有设置。
+- **填表失败自动重试机制**：
+  - **批量填表**：修复了 `core/table-system/batch-filler.js` 中当 AI 返回空内容或未包含有效 `<Amily2Edit>` 指令块时，系统误判为“处理成功”并跳过该批次的 Bug。现在会正确抛出错误并触发自动重试。
+  - **分步填表**：在 `core/table-system/secondary-filler.js` 中新增了自定义重试逻辑。用户可以在 UI 面板中设置“最大重试次数”，当副 API 填表失败（如网络错误、AI 偷懒等）时，系统会自动进行重试，提高了分步填表的容错率。
+- **史官系统 (Historiographer) 优化**：
+  - **Ngms API 强制参数**：在 `core/api/Ngms_api.js` 中，移除了旧版 UI 中的温度和最大 Token 设置，强制将默认温度设为 `1.0`，最大 Token 设为 `30000`，以确保总结任务的稳定性和完整性。
+  - **总结失败自动重试**：在 `core/historiographer.js` 中为“微言录”和“宏史卷”的生成过程添加了自定义重试逻辑。用户可在 UI 中设置重试次数，当 AI 返回空内容时，系统会自动等待并重试，降低了因 API 波动导致的总结失败率。
+  - **时间跨度标识优化**：修改了 `utils/settings.js` 中的”微言录”和”宏史卷”提示词，强制要求 AI 在提取时间时加入相对时间跨度标识 `(Xd)`（如 `2023-09-15(2d)-星期五-15:00`），以解决长篇剧情中因缺乏具体日期导致的时间线混乱问题。
+- **翰林院设置回填中断修复（Rerank 等开关无法回显的根因）**：修复了 `ui/hanlinyuan-bindings.js` 的 `loadSettingsToUI` 在处理“标签提取”相关 DOM（`hly-tag-extraction-toggle` / `hly-tag-input` / `hly-tag-input-container`，已在 2.1.0 重构中删除）时对 `null` 赋值抛出 TypeError 的问题。由于该异常发生在 Rerank 设置回填之前，导致 Rerank 等开关虽已正确保存至 `extension_settings['hanlinyuan-rag-core']`，但刷新后 UI 不再回显，表现为“开关无法持久化”。清理相关 DOM 回填与 `bindInternalUIEvents` 中同名元素的事件绑定后，Rerank 等翰林院面板设置可正常持久化显示。
+- **翰林院孤儿引用清理**：移除 `ui/hanlinyuan-bindings.js` → `updateAndSaveSetting` 中对已删除函数 `syncHanlinLinkedRuleProfile` 的四处调用，修复了修改浓缩/查询预处理的标签提取或标签字段时抛出 ReferenceError 的问题（2.1.0 重构遗留）。
+- **超级记忆 RAG 设置路径修复**：修复了 `core/super-memory/bindings.js` 中 `getRagSettings` 使用错误路径 `extension_settings[extensionName]['hanlinyuan-rag-core']` 读写的问题。翰林院核心 (`core/rag-processor.js`) 使用的是顶层 `extension_settings['hanlinyuan-rag-core']`，改为一致路径后，归档开关 / 关联图谱开关 / 归档阈值等设置可正确持久化并与翰林院面板同步。
+- **分步填表防抖延迟参数落地**：之前 `utils/settings.js` 与 `core/table-system/settings.js` 均声明了 `secondary_filler_delay` 默认值，但既没有 UI 入口也没有在代码中被读取。现已：
+  - 在「分步填表高级控制」面板新增「触发延迟 (毫秒)」数值输入（`assets/amily-data-table/Memorisation-forms.html`）；
+  - 在 `ui/table-bindings.js` 中为该输入框补齐值回填与 `updateAndSaveTableSetting('secondary_filler_delay', ...)` 的 change 绑定；
+  - 在 `core/table-system/secondary-filler.js` 的 `fillWithSecondaryApi` 入口处实现真正的防抖：自动触发（`forceRun=false`）且延迟 > 0 时，会用模块级定时器调度本次调用，延迟期内再次到来的触发会重置计时器；`forceRun=true` 的手动触发及重新填表仍会立即执行，并清掉待触发的防抖任务。
+- **填表响应检查窗（Amily2Edit 指令块缺失处理）**：
+  - 新增 `ui/page-window.js` → `showTableFillReviewModal`，参照总结模块 `showSummaryModal` 的交互模式，提供原始响应查看/编辑、继续补全、重新填表、手动应用、取消五种操作。
+  - **批量填表 / 楼层填表**：修改 `core/table-system/batch-filler.js` 的 `runBatchAttempt` 与 `startFloorRangeFilling`，当 AI 响应缺少 `<Amily2Edit>` 指令块时不再直接抛错进入自动重试，而是弹出检查窗让用户查看原始报文；批次模式下会先将按钮置为“继续填表”暂停状态，操作结束后自动恢复流程；网络/空响应等其它异常仍走原有的 `MAX_RETRIES` 自动重试。
+  - **分步填表**：修改 `core/table-system/secondary-filler.js` 的 `fillWithSecondaryApi`，在缺少指令块时弹出同款检查窗，并将原先分散的“写表 → 存 hash → saveChat”流程抽取为 `commitSecondaryFillResult` 公共函数，供正常路径与手动应用路径复用；顺带补齐该文件缺失的 `log` 导入。
+  - **继续补全实现**：新增 `requestContinuation` / `requestSecondaryContinuation` 工具函数，将用户当前编辑的文本作为 `assistant` 消息追加到原始请求之后，并附加专用的“接续”用户提示词再次调用表格模型，将返回文本拼接到原文末尾回填到检查窗文本框中。
+
+### 2.1.0 (2026/04/18)
+
+以下为更新内容：
+- **提取规则配置通用化重构**：
+  - `RuleProfileManager` 新增功能槽（SLOTS）+ 统一分配（assignments）机制，参照 `ApiProfileManager` 的架构模式，将提取规则预设存储在 `extension_settings`（settings.json）中实现云同步。
+  - 定义四个功能槽：`table`（表格提取）、`historiography`（史官/总结提取）、`condensation`（翰林院·浓缩）、`queryPreprocessing`（翰林院·查询预处理）。
+  - 新增 `resolveSlotRuleConfig(slot)` 统一解析接口，优先读取 assignments 分配，回退兼容旧字段。
+  - 新增一次性迁移逻辑：自动将旧版分散的 `table_rule_profile_id`、`historiographyRuleProfileId`、`condensation.ruleProfileId`、`queryPreprocessing.ruleProfileId` 迁移到统一的 `ruleProfileAssignments`。
+- **消费方 UI 统一改为下拉选单**：
+  - **表格系统**：移除”启用独立提取规则”开关和”配置规则”弹窗，替换为规则配置下拉选单，onChange 即时生效。
+  - **史官系统**：移除标签提取开关、标签输入框和”内容排除”弹窗按钮，替换为规则配置下拉选单。
+  - **翰林院（浓缩 + 查询预处理）**：移除各自的规则配置弹窗按钮，分别替换为独立的规则配置下拉选单；修复了翰林院旧弹窗存在的 HTML 注入隐患。
+  - 新建/编辑规则统一通过「规则配置中心」面板完成。
+- **遗留代码清理**：
+  - 删除 `openTableRuleEditor`（table-bindings.js）、`showHistoriographyExclusionRulesModal`（historiography-bindings.js）、`showRulesModal` / `saveHanlinRuleProfile` / `syncHanlinLinkedRuleProfile`（hanlinyuan-bindings.js）等旧弹窗函数。
+  - 删除 `saveHistoriographyRuleProfile` / `syncHistoriographyLinkedRuleProfile` 等旧同步函数。
+  - 移除 `table_independent_rules_enabled` 开关判断，批量填表和分步填表改为检查 resolved config 是否有实际内容。
+  - 修复 `previewCondensation` 引用已移除 DOM 元素（`hly-tag-extraction-toggle` / `hly-tag-input`）的问题，改为从 resolved config 读取。

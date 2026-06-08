@@ -1,0 +1,47 @@
+// Side-effect imports (独立模块/自初始化模块)
+import "./PreOptimizationViewer/index.js";
+import './core/amily2-updater.js';
+import './SL/bus/Amily2Bus.js'
+import './utils/config/ConfigManager.js'
+import './utils/config/api-key-store/ApiKeyStore.js'
+import './utils/config/ApiProfileManager.js'
+import './utils/config/RuleProfileManager.js'
+import './core/table-system/TableSystemService.js'
+
+// Re-exports (重新导出供 index.js 使用)
+export { createDrawer } from "./ui/drawer.js";
+export { showPlotOptimizationProgress, updatePlotOptimizationProgress, hidePlotOptimizationProgress } from './ui/optimization-progress.js';
+export { registerSlashCommands } from "./core/commands.js";
+export { onMessageReceived, handleTableUpdate } from "./core/events.js";
+export { processPlotOptimization } from "./core/summarizer.js";
+
+// External SillyTavern scripts (外部脚本)
+export { getContext, extension_settings } from "/scripts/extensions.js";
+export { characters, this_chid, eventSource, event_types, saveSettingsDebounced } from '/script.js';
+
+// Core Systems
+export { injectTableData, generateTableContent } from "./core/table-system/injector.js";
+export { initialize as initializeRagProcessor } from "./core/rag-processor.js";
+export { loadSettingsToUI as loadHanlinyuanSettingsToUI } from "./ui/hanlinyuan-bindings.js";
+export { loadTables, clearHighlights, rollbackAndRefill, rollbackState, commitPendingDeletions, saveStateToMessage, getMemoryState, clearUpdatedTables } from './core/table-system/manager.js';
+export { fillWithSecondaryApi, resetSecondaryFillerLock, isSecondaryFillerRunning, abortCurrentSecondaryFiller } from './core/table-system/secondary-filler.js';
+export { renderTables } from './ui/table-bindings.js';
+export { log } from './core/table-system/logger.js';
+export { checkForUpdates } from './core/api.js';
+export { setUpdateInfo, applyUpdateIndicator } from './ui/state.js';
+export { pluginVersion, extensionName, defaultSettings } from './utils/settings.js';
+export { configManager } from './utils/config/ConfigManager.js';
+export { apiKeyStore } from './utils/config/api-key-store/ApiKeyStore.js';
+export { apiProfileManager, PROFILE_TYPES, SLOTS } from './utils/config/ApiProfileManager.js';
+export { ruleProfileManager, RULE_SLOTS, resolveSlotRuleConfig, resolveCondensationRuleConfig, resolveQueryPreprocessingRuleConfig, resolveTableRuleConfig, resolveHistoriographyRuleConfig, resolveRuleConfig } from './utils/config/RuleProfileManager.js';
+export { bindApiConfigPanel } from './ui/api-config-bindings.js';
+export { bindRuleConfigPanel } from './ui/rule-config-bindings.js';
+export { checkAuthorization, refreshUserInfo } from './utils/auth.js';
+export { tableSystemDefaultSettings } from './core/table-system/settings.js';
+export { manageLorebookEntriesForChat } from './core/lore.js';
+
+// Feature Modules
+export { bindGlossaryEvents } from './glossary/GT_bindings.js';
+export { updateOrInsertTableInChat } from './ui/message-table-renderer.js';
+export { initializeApiListener, registerApiHandler, amilyHelper, initializeAmilyHelper } from './core/tavern-helper/main.js';
+export { registerContextOptimizerMacros, resetContextBuffer } from './core/context-optimizer.js';
